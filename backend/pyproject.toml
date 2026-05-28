@@ -6,8 +6,10 @@ readme = "README.md"
 requires-python = ">=3.10"
 
 dependencies = [
-    # FastAPI
-    "fastapi>=0.115.0",
+    # FastAPI with CLI support
+    "fastapi[standard]>=0.115.0",
+
+    # ASGI server
     "uvicorn[standard]>=0.30.0",
 
     # Google GenAI SDK
@@ -16,7 +18,7 @@ dependencies = [
     # Environment variables
     "python-dotenv>=1.0.1",
 
-    # Form handling / uploads
+    # File uploads/forms
     "python-multipart>=0.0.9",
 
     # HTTP requests
