@@ -11,7 +11,7 @@ function App() {
 
   async function submitData(e) {
     e.preventDefault();
-    const apiResponse = await axios.post("http://localhost:8000/", {
+    const apiResponse = await axios.post("https://sql-generator-bf95a45b.fastapicloud.dev/", {
       database,
       table_schema: schema,
       message,
