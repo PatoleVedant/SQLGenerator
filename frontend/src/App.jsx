@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 import axios from "axios";
-import { Button } from "@/components/ui/Button";
+import { Button } from "./components/ui/Button";
 
 function App() {
   const [database, setDatabase] = useState("");
