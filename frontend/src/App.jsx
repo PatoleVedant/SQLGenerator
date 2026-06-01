@@ -8,19 +8,30 @@ function App() {
   const [schema, setSchema] = useState("");
   const [message, setMessage] = useState("");
   const [response, setResponse] = useState(null);
+  const [isLoading,setIsLoading] = useState(false);
 
   async function submitData(e) {
     e.preventDefault();
-    const apiResponse = await axios.post("https://sql-generator-bf95a45b.fastapicloud.dev/", {
-      database,
-      table_schema: schema,
-      message,
-    });
-    setResponse(apiResponse.data);
-    console.log(apiResponse.data);
-    setDatabase("");
-    setSchema("");
-    setMessage("");
+    setIsLoading(true);
+    try{
+
+      const apiResponse = await axios.post("https://sql-generator-bf95a45b.fastapicloud.dev/", {
+        database,
+        table_schema: schema,
+        message,
+      });
+      setResponse(apiResponse.data);
+      console.log(apiResponse.data);
+      setDatabase("");
+      setSchema("");
+      setMessage("");
+    }
+    catch(error){
+      console.log(error)
+    }
+    finally{
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -58,7 +69,7 @@ function App() {
             Generate SQL
           </Button>
         </form>
-
+        {isLoading && <p className="text-base leading-7 text-foreground max-w-prose bg-card border border-border p-8 rounded-xl w-[450px] flex items-center justify-center text-secondary-foreground text-2xl font-bold text-foreground">Generating SQL ..</p>}
         {response && <p className=" text-base leading-7 text-foreground max-w-prose bg-card border border-border p-8 rounded-xl w-[450px] flex items-center justify-center text-secondary-foreground text-2xl font-bold text-foreground">{response.response.sql}</p>}
       </div>
     </>
