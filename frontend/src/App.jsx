@@ -2,6 +2,12 @@ import { useState } from "react";
 import "./App.css";
 import axios from "axios";
 import { Button } from "./components/ui/button";
+import { tailChase } from 'ldrs'
+tailChase.register()
+
+// Default values shown
+
+
 
 function App() {
   const [database, setDatabase] = useState("");
@@ -64,13 +70,18 @@ function App() {
 
           <Button
             type="submit"
-            className="bg-primary text-primary-foreground px-4 py-2 rounded-lg"
+            className="bg-primary text-primary-foreground px-4 py-2 rounded-lg" 
+            disable = {isLoading}
           >
             Generate SQL
           </Button>
         </form>
-        {isLoading && <p className="text-base leading-7 text-foreground max-w-prose bg-card border border-border p-8 rounded-xl w-[450px] flex items-center justify-center text-secondary-foreground text-2xl font-bold text-foreground">Generating SQL ..</p>}
-        {response && <p className=" text-base leading-7 text-foreground max-w-prose bg-card border border-border p-8 rounded-xl w-[450px] flex items-center justify-center text-secondary-foreground text-2xl font-bold text-foreground">{response.response.sql}</p>}
+        {isLoading && (<l-tail-chase
+  size="40"
+  speed="1.75" 
+  color="white" 
+></l-tail-chase>)}
+        {!isLoading && response && <p className=" text-base leading-7 text-foreground max-w-prose bg-card border border-border p-8 rounded-xl w-[450px] flex items-center justify-center text-secondary-foreground text-2xl font-bold text-foreground">{response.response.sql}</p>}
       </div>
     </>
   );
