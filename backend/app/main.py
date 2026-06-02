@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from services.ai_service import generate_sql
 from fastapi.middleware.cors import CORSMiddleware
+from typing import List
 import dotenv
 dotenv.dotenv_values
 app = FastAPI()
@@ -14,6 +15,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
 class UserMessage(BaseModel):
     database : str = Field(description="Give the database context"
                            ,examples=["mydb","user_db"])
@@ -21,12 +26,15 @@ class UserMessage(BaseModel):
                                ,examples=["user (id, name, email country), orders(id, user_id, total_price, created_at)"])
     message : str = Field(description="Give the database context",
                           examples=["Give me the 5 best students from the students table"])
+    conversation_history : List[ChatMessage] = []
 
 @app.post("/")
 async def home(message : UserMessage):
     
     response = await generate_sql(database=message.database,
         table_schema=message.table_schema,
-        message=message.message)
+        message=message.message,
+        conversation_history = message.conversation_history
+        )
     
     return {"response" : response}

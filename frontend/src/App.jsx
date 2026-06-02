@@ -5,37 +5,55 @@ import { Button } from "./components/ui/button";
 import { tailChase } from 'ldrs'
 tailChase.register()
 
-// Default values shown
-
-
 
 function App() {
   const [database, setDatabase] = useState("");
   const [schema, setSchema] = useState("");
   const [message, setMessage] = useState("");
-  const [response, setResponse] = useState(null);
-  const [isLoading,setIsLoading] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   async function submitData(e) {
     e.preventDefault();
     setIsLoading(true);
-    try{
+    const userMessage = {
+      role: "user",
+      content: message
+    };
 
-      const apiResponse = await axios.post("https://sql-generator-bf95a45b.fastapicloud.dev/", {
-        database,
-        table_schema: schema,
-        message,
-      });
-      setResponse(apiResponse.data);
-      console.log(apiResponse.data);
-      setDatabase("");
-      setSchema("");
-      setMessage("");
+    const updatedMessages = [
+      ...messages,
+      userMessage
+    ];
+
+    try {
+
+      const apiResponse = await axios.post("https://sql-generator-bf95a45b.fastapicloud.dev/",
+        {
+          database,
+          table_schema: schema,
+          message,
+          conversation_history: updatedMessages
+        }
+      );
+      const assistantMessage = {
+        role: "assistant",
+        content:
+          apiResponse.data.response.needs_clarification
+            ? apiResponse.data.response.clarification_question
+            : apiResponse.data.response.sql
+      };
+
+      setMessages([
+        ...updatedMessages,
+        assistantMessage
+      ]);
+      setMessage("")
     }
-    catch(error){
+    catch (error) {
       console.log(error)
     }
-    finally{
+    finally {
       setIsLoading(false)
     }
   }
@@ -70,18 +88,50 @@ function App() {
 
           <Button
             type="submit"
-            className="bg-primary text-primary-foreground px-4 py-2 rounded-lg" 
-            disable = {isLoading}
+            className="bg-primary text-primary-foreground px-4 py-2 rounded-lg"
+            disabled={isLoading}
           >
             Generate SQL
           </Button>
         </form>
         {isLoading && (<l-tail-chase
-  size="40"
-  speed="1.75" 
-  color="white" 
-></l-tail-chase>)}
-        {!isLoading && response && <p className=" text-base leading-7 text-foreground max-w-prose bg-card border border-border p-8 rounded-xl w-[450px] flex items-center justify-center text-secondary-foreground text-2xl font-bold text-foreground">{response.response.sql}</p>}
+          size="40"
+          speed="1.75"
+          color="white"
+        ></l-tail-chase>)}
+        <div className="w-[700px] space-y-4">
+
+          {messages.map((msg, index) => (
+
+            <div
+              key={index}
+              className={
+                msg.role === "user"
+                  ? "flex justify-end"
+                  : "flex justify-start"
+              }
+            >
+
+              <div
+                className={`
+          max-w-[80%]
+          p-4
+          rounded-xl
+          border
+          ${msg.role === "user"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-card"
+                  }
+        `}
+              >
+                {msg.content}
+              </div>
+
+            </div>
+
+          ))}
+
+        </div>
       </div>
     </>
   );
